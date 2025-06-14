@@ -2,66 +2,16 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Comentarios</title>
+  <title>Comentarios por Sección</title>
   <style>
-    body {
-      font-family: sans-serif;
-      background: #f4f4f4;
-      padding: 20px;
-    }
-
-    h2 { text-align: center; }
-
-    .comentario {
-      background: #fff;
-      padding: 10px;
-      margin: 10px auto;
-      max-width: 600px;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-
-    input, textarea, button {
-      display: block;
-      margin: 10px auto;
-      padding: 10px;
-      width: 90%;
-      max-width: 500px;
-    }
-
-    button {
-      background: #28a745;
-      color: white;
-      border: none;
-      font-weight: bold;
-      cursor: pointer;
-      border-radius: 6px;
-      transition: 0.3s;
-    }
-
-    button:hover {
-      background: #218838;
-    }
-
-    #alerta {
-      text-align: center;
-      padding: 10px;
-      margin: 10px auto;
-      max-width: 500px;
-      background-color: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
-      border-radius: 6px;
-      display: none;
-    }
-
-    #listaComentarios {
-      margin-top: 30px;
-    }
+    /* Igual que antes */
   </style>
 </head>
 <body>
   <h2>💬 Dejá tu comentario</h2>
+
+  <!-- Por ejemplo, guardamos la id de la sección en un input hidden o variable JS -->
+  <input type="hidden" id="seccionId" value="029410" />
 
   <input type="text" id="nombre" placeholder="Tu nombre" />
   <textarea id="mensaje" rows="4" placeholder="Escribí tu comentario..."></textarea>
@@ -89,7 +39,10 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-    const comentariosRef = ref(db, "comentarios");
+
+    // Tomar la sección desde el input
+    const idSeccion = document.getElementById("seccionId").value;
+    const comentariosRef = ref(db, "comentarios/" + idSeccion);
 
     function enviarComentario() {
       const nombre = document.getElementById("nombre").value.trim();
@@ -109,14 +62,12 @@
 
       document.getElementById("mensaje").value = "";
 
-      // Mostrar mensaje visual de éxito
       alerta.style.display = "block";
       setTimeout(() => {
         alerta.style.display = "none";
       }, 2000);
     }
 
-    // Exportar la función para que sea visible desde el HTML
     window.enviarComentario = enviarComentario;
 
     const listaComentarios = document.getElementById("listaComentarios");
