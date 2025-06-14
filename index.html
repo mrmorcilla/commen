@@ -63,7 +63,7 @@
 <body>
   <h2>💬 Dejá tu comentario</h2>
 
-  <input type="text" id="nombre" placeholder="Tu nombre">
+  <input type="text" id="nombre" placeholder="Tu nombre" />
   <textarea id="mensaje" rows="4" placeholder="Escribí tu comentario..."></textarea>
   <button onclick="enviarComentario()">Enviar comentario</button>
 
@@ -115,6 +115,9 @@
         alerta.style.display = "none";
       }, 2000);
     }
+
+    // Exportar la función para que sea visible desde el HTML
+    window.enviarComentario = enviarComentario;
 
     const listaComentarios = document.getElementById("listaComentarios");
 
