@@ -46,29 +46,27 @@
     a {
       color: #1e90ff;
     }
+    code {
+      background: #eee;
+      display: block;
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 0.9em;
+      word-wrap: break-word;
+    }
     button {
-      padding: 10px 20px;
-      background-color: #1e90ff;
-      border: none;
+      background: #1e90ff;
       color: white;
+      padding: 10px 15px;
+      border: none;
       border-radius: 5px;
       cursor: pointer;
     }
     button:hover {
-      background-color: #0d6efd;
+      background: #006fd0;
     }
-    #resultado {
-      background: #eef;
-      padding: 15px;
-      margin-top: 15px;
-      border-radius: 5px;
-      border: 1px solid #99c;
-    }
-    code {
-      background: #eee;
-      padding: 5px;
-      display: block;
-      margin-top: 10px;
+    #resultado p {
+      margin: 10px 0;
     }
   </style>
 </head>
@@ -95,23 +93,18 @@
     </div>
 
     <div class="section">
-      <h2>¿Cómo se ve? - como quieras</h2>
-      <img src="captura.png" alt="Captura del proyecto">
+      <h2>¿Cómo se ve?</h2>
+      <img src="https://via.placeholder.com/800x400?text=Vista+de+comentarios+CommenApp" alt="Captura del proyecto">
     </div>
 
     <div class="section">
       <h2>Cómo usarlo</h2>
       <ol>
-        <li>Registra tu id en la web</li>
-        <li>Obtén tu enlace único <code>del iframe</code> en tu sitio web</li>
-        <li>¡Y disfruta!</li>
+        <li>Haz clic en el botón para generar un nuevo ID de comentarios</li>
+        <li>Copia el iframe generado</li>
+        <li>Pégalo en tu página web donde quieras que aparezcan los comentarios</li>
       </ol>
-    </div>
-
-    <div class="section">
-      <h2>Generar tu sección de comentarios</h2>
-      <p>Presiona el botón para obtener una ID única para tu sitio:</p>
-      <button onclick="generarNuevaSeccion()">Generar ID</button>
+      <button onclick="generarNuevaSeccion()">🆕 Generar nueva sección</button>
       <div id="resultado"></div>
     </div>
 
@@ -125,7 +118,7 @@
     &copy; 2025 CommenApp. Todos los derechos reservados.
   </footer>
 
-  <!-- Firebase SDK -->
+  <!-- Firebase + funciones -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
     import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
@@ -182,6 +175,10 @@
         .then(() => alert("✅ Iframe copiado al portapapeles"))
         .catch(err => alert("❌ Error al copiar: " + err));
     }
+
+    // Hacemos públicas las funciones
+    window.generarNuevaSeccion = generarNuevaSeccion;
+    window.copiarIframe = copiarIframe;
   </script>
 </body>
 </html>
