@@ -2,16 +2,45 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Comentarios por Sección</title>
+  <title>Comentarios Embebidos</title>
   <style>
-    /* Igual que antes */
+    body {
+      font-family: Arial, sans-serif;
+      padding: 10px;
+      background: #f9f9f9;
+      color: #222;
+    }
+    input, textarea, button {
+      width: 100%;
+      margin: 5px 0;
+      padding: 8px;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
+    button {
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      font-weight: bold;
+    }
+    #alerta {
+      display: none;
+      color: green;
+      margin-bottom: 10px;
+    }
+    .comentario {
+      background: white;
+      border: 1px solid #ddd;
+      padding: 8px;
+      margin-bottom: 8px;
+      border-radius: 4px;
+    }
   </style>
 </head>
 <body>
-  <h2>💬 Dejá tu comentario</h2>
 
-  <!-- Por ejemplo, guardamos la id de la sección en un input hidden o variable JS -->
-  <input type="hidden" id="seccionId" value="029410" />
+  <h3>Comentarios</h3>
 
   <input type="text" id="nombre" placeholder="Tu nombre" />
   <textarea id="mensaje" rows="4" placeholder="Escribí tu comentario..."></textarea>
@@ -20,65 +49,73 @@
   <div id="alerta">✅ Comentario enviado con éxito</div>
 
   <div id="listaComentarios">
-    <h3>📝 Comentarios anteriores:</h3>
+    <h4>Comentarios anteriores:</h4>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-    import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+  import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyBNB1pie7adM_1kpmqYQaTN38OBSwmqd8A",
-      authDomain: "comentarois.firebaseapp.com",
-      databaseURL: "https://comentarois-default-rtdb.firebaseio.com",
-      projectId: "comentarois",
-      storageBucket: "comentarois.appspot.com",
-      messagingSenderId: "1074326048901",
-      appId: "1:1074326048901:web:98ceed4e2aa8b2026b59ec"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyBNB1pie7adM_1kpmqYQaTN38OBSwmqd8A",
+    authDomain: "comentarois.firebaseapp.com",
+    databaseURL: "https://comentarois-default-rtdb.firebaseio.com",
+    projectId: "comentarois",
+    storageBucket: "comentarois.appspot.com",
+    messagingSenderId: "1074326048901",
+    appId: "1:1074326048901:web:98ceed4e2aa8b2026b59ec"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
 
-    // Tomar la sección desde el input
-    const idSeccion = document.getElementById("seccionId").value;
-    const comentariosRef = ref(db, "comentarios/" + idSeccion);
+  // Función para leer parámetro URL
+  function getQueryParam(param) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(param);
+  }
 
-    function enviarComentario() {
-      const nombre = document.getElementById("nombre").value.trim();
-      const mensaje = document.getElementById("mensaje").value.trim();
-      const alerta = document.getElementById("alerta");
+  // Obtenemos la ID de sección de la URL o ponemos una por defecto
+  const idSeccion = getQueryParam("id") || "default";
 
-      if (!nombre || !mensaje) {
-        alert("Completá ambos campos");
-        return;
-      }
+  const comentariosRef = ref(db, "comentarios/" + idSeccion);
 
-      push(comentariosRef, {
-        nombre: nombre,
-        mensaje: mensaje,
-        timestamp: Date.now()
-      });
+  function enviarComentario() {
+    const nombre = document.getElementById("nombre").value.trim();
+    const mensaje = document.getElementById("mensaje").value.trim();
+    const alerta = document.getElementById("alerta");
 
-      document.getElementById("mensaje").value = "";
-
-      alerta.style.display = "block";
-      setTimeout(() => {
-        alerta.style.display = "none";
-      }, 2000);
+    if (!nombre || !mensaje) {
+      alert("Completá ambos campos");
+      return;
     }
 
-    window.enviarComentario = enviarComentario;
-
-    const listaComentarios = document.getElementById("listaComentarios");
-
-    onChildAdded(comentariosRef, (data) => {
-      const c = data.val();
-      const div = document.createElement("div");
-      div.className = "comentario";
-      div.innerHTML = `<strong>${c.nombre}</strong><br>${c.mensaje}`;
-      listaComentarios.appendChild(div);
+    push(comentariosRef, {
+      nombre: nombre,
+      mensaje: mensaje,
+      timestamp: Date.now()
     });
-  </script>
+
+    document.getElementById("mensaje").value = "";
+
+    alerta.style.display = "block";
+    setTimeout(() => {
+      alerta.style.display = "none";
+    }, 2000);
+  }
+
+  window.enviarComentario = enviarComentario;
+
+  const listaComentarios = document.getElementById("listaComentarios");
+
+  onChildAdded(comentariosRef, (data) => {
+    const c = data.val();
+    const div = document.createElement("div");
+    div.className = "comentario";
+    div.innerHTML = `<strong>${c.nombre}</strong><br>${c.mensaje}`;
+    listaComentarios.appendChild(div);
+  });
+
+</script>
 </body>
 </html>
