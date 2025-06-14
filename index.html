@@ -36,10 +36,27 @@
       font-weight: bold;
       cursor: pointer;
       border-radius: 6px;
+      transition: 0.3s;
     }
 
     button:hover {
       background: #218838;
+    }
+
+    #alerta {
+      text-align: center;
+      padding: 10px;
+      margin: 10px auto;
+      max-width: 500px;
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+      border-radius: 6px;
+      display: none;
+    }
+
+    #listaComentarios {
+      margin-top: 30px;
     }
   </style>
 </head>
@@ -50,7 +67,11 @@
   <textarea id="mensaje" rows="4" placeholder="Escribí tu comentario..."></textarea>
   <button onclick="enviarComentario()">Enviar comentario</button>
 
-  <div id="listaComentarios"></div>
+  <div id="alerta">✅ Comentario enviado con éxito</div>
+
+  <div id="listaComentarios">
+    <h3>📝 Comentarios anteriores:</h3>
+  </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
@@ -73,7 +94,12 @@
     function enviarComentario() {
       const nombre = document.getElementById("nombre").value.trim();
       const mensaje = document.getElementById("mensaje").value.trim();
-      if (!nombre || !mensaje) return alert("Completá ambos campos");
+      const alerta = document.getElementById("alerta");
+
+      if (!nombre || !mensaje) {
+        alert("Completá ambos campos");
+        return;
+      }
 
       push(comentariosRef, {
         nombre: nombre,
@@ -82,6 +108,12 @@
       });
 
       document.getElementById("mensaje").value = "";
+
+      // Mostrar mensaje visual de éxito
+      alerta.style.display = "block";
+      setTimeout(() => {
+        alerta.style.display = "none";
+      }, 2000);
     }
 
     const listaComentarios = document.getElementById("listaComentarios");
@@ -91,7 +123,7 @@
       const div = document.createElement("div");
       div.className = "comentario";
       div.innerHTML = `<strong>${c.nombre}</strong><br>${c.mensaje}`;
-      listaComentarios.prepend(div);
+      listaComentarios.appendChild(div);
     });
   </script>
 </body>
