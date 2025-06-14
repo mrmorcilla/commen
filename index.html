@@ -141,7 +141,7 @@
         return generarNuevaSeccion(); // si ya existe, genera otro
       }
 
-      await set(comentariosRef, { ejemplo: { nombre: "Sistema", comentario: "Sección creada correctamente." } });
+      await set(comentariosRef, { commen: { nombre: "Anonimo", mensaje: "Creado con exito!" } });
 
       const iframeUrl = `https://mrmorcilla.github.io/commen/iframe/a.html?id=${nuevoId}`;
       const iframeCodeRaw = `<iframe src="${iframeUrl}" width="100%" height="500"></iframe>`;
