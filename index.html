@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>CommenApp</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
@@ -50,23 +50,18 @@
       background: #eee;
       display: block;
       padding: 10px;
+      border: 1px solid #ccc;
+      overflow-x: auto;
+      white-space: pre-wrap;
       margin: 10px 0;
-      font-size: 0.9em;
-      word-wrap: break-word;
     }
     button {
-      background: #1e90ff;
+      background-color: #1e90ff;
       color: white;
-      padding: 10px 15px;
       border: none;
-      border-radius: 5px;
+      padding: 8px 12px;
+      border-radius: 4px;
       cursor: pointer;
-    }
-    button:hover {
-      background: #006fd0;
-    }
-    #resultado p {
-      margin: 10px 0;
     }
   </style>
 </head>
@@ -94,17 +89,17 @@
 
     <div class="section">
       <h2>¿Cómo se ve?</h2>
-      <img src="https://via.placeholder.com/800x400?text=Vista+de+comentarios+CommenApp" alt="Captura del proyecto">
+      <img src="captura.png" alt="Captura del proyecto">
     </div>
 
     <div class="section">
       <h2>Cómo usarlo</h2>
       <ol>
-        <li>Haz clic en el botón para generar un nuevo ID de comentarios</li>
-        <li>Copia el iframe generado</li>
-        <li>Pégalo en tu página web donde quieras que aparezcan los comentarios</li>
+        <li>Haz clic en el botón para generar un ID libre</li>
+        <li>Obtén tu enlace único en forma de <code>iframe</code></li>
+        <li>¡Insértalo en tu sitio y listo!</li>
       </ol>
-      <button onclick="generarNuevaSeccion()">🆕 Generar nueva sección</button>
+      <button onclick="generarNuevaSeccion()">🆕 Generar sección</button>
       <div id="resultado"></div>
     </div>
 
@@ -118,7 +113,6 @@
     &copy; 2025 CommenApp. Todos los derechos reservados.
   </footer>
 
-  <!-- Firebase + funciones -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
     import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
@@ -136,49 +130,38 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    async function generarNuevaSeccion() {
+    window.generarNuevaSeccion = async function () {
       const resultadoDiv = document.getElementById("resultado");
-      resultadoDiv.innerHTML = "🔍 Buscando ID libre...";
 
-      try {
-        const snapshot = await get(ref(db, 'comentarios'));
-        const usados = snapshot.exists() ? Object.keys(snapshot.val()) : [];
+      let nuevoId = Math.floor(Math.random() * 1000000).toString().padStart(6, "0");
+      const comentariosRef = ref(db, `comentarios/${nuevoId}`);
+      const snapshot = await get(comentariosRef);
 
-        let nuevoId = 0;
-        while (usados.includes(nuevoId.toString())) {
-          nuevoId++;
-        }
-
-        await set(ref(db, 'comentarios/' + nuevoId), {
-          meta: "seccion creada"
-        });
-
-        const iframeUrl = `https://mrmorcilla.github.io/commen/iframe/a.html?id=${nuevoId}`;
-        const iframeCode = `<iframe src="${iframeUrl}" width="100%" height="500"></iframe>`;
-
-        resultadoDiv.innerHTML = `
-          <p><strong>ID asignado:</strong> ${nuevoId}</p>
-          <p>Usa este iframe en tu sitio:</p>
-          <code id="codigoIframe">${iframeCode}</code>
-          <button onclick="copiarIframe()">📋 Copiar código</button>
-        `;
-
-        window.iframeCode = iframeCode;
-      } catch (error) {
-        console.error(error);
-        resultadoDiv.innerHTML = "❌ Error al generar ID. Intenta nuevamente.";
+      if (snapshot.exists()) {
+        return generarNuevaSeccion(); // si ya existe, genera otro
       }
-    }
 
-    function copiarIframe() {
-      navigator.clipboard.writeText(window.iframeCode)
-        .then(() => alert("✅ Iframe copiado al portapapeles"))
-        .catch(err => alert("❌ Error al copiar: " + err));
-    }
+      await set(comentariosRef, { ejemplo: { nombre: "Sistema", comentario: "Sección creada correctamente." } });
 
-    // Hacemos públicas las funciones
-    window.generarNuevaSeccion = generarNuevaSeccion;
-    window.copiarIframe = copiarIframe;
+      const iframeUrl = `https://mrmorcilla.github.io/commen/iframe/a.html?id=${nuevoId}`;
+      const iframeCodeRaw = `<iframe src="${iframeUrl}" width="100%" height="500"></iframe>`;
+      const iframeCodeEscaped = iframeCodeRaw.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+      resultadoDiv.innerHTML = `
+        <p><strong>ID asignado:</strong> ${nuevoId}</p>
+        <p>Usa este iframe en tu sitio:</p>
+        <code id="codigoIframe">${iframeCodeEscaped}</code>
+        <button onclick="copiarIframe()">📋 Copiar código</button>
+      `;
+
+      window.iframeCode = iframeCodeRaw;
+    };
+
+    window.copiarIframe = function () {
+      navigator.clipboard.writeText(window.iframeCode).then(() => {
+        alert("Iframe copiado al portapapeles.");
+      });
+    };
   </script>
 </body>
 </html>
